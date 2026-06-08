@@ -50,11 +50,5 @@ public class OrderNotificationKafkaAdapter implements NotificationPublisherPort 
             log.error("Failed to publish order created event. orderId={}", order.getId(), ex);
             throw new RuntimeException("Order created event could not be published", ex);
         }
-
-        kafkaTemplate.send(
-                KafkaTopics.ORDER_CREATED,
-                order.getId().toString(),
-                orderCreatedEvent
-        );
     }
 }
