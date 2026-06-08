@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,13 +22,16 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponse createOrder(
             @Valid @RequestBody CreateOrderRequest request,
-            Authentication auth
-    ) {
+            @AuthenticationPrincipal Jwt jwt
+            ) {
+
+        String username = jwt.getClaimAsString("preferred_username");
+
         CreateOrderCommand command = new CreateOrderCommand(
                 request.productName(),
                 request.quantity(),
                 request.price(),
-                auth.getName()
+                username
         );
 
         Order order = createOrderUseCase.createOrder(command);
