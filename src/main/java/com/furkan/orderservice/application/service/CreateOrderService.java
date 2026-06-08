@@ -5,6 +5,7 @@ import com.furkan.orderservice.domain.model.Order;
 import com.furkan.orderservice.domain.port.in.CreateOrderUseCase;
 import com.furkan.orderservice.domain.port.out.NotificationPublisherPort;
 import com.furkan.orderservice.domain.port.out.OrderRepositoryPort;
+import com.furkan.orderservice.domain.port.out.SessionCachePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +19,15 @@ public class CreateOrderService implements CreateOrderUseCase {
 
     private final OrderRepositoryPort orderRepositoryPort;
     private final NotificationPublisherPort notificationPublisherPort;
+    private final SessionCachePort sessionCachePort;
 
     @Override
     public Order createOrder(
             CreateOrderCommand command
     ) {
+
+        sessionCachePort.cacheAuthenticatedUser(command.username());
+
         Order order = Order.builder()
                 .id(UUID.randomUUID())
                 .productName(command.productName())
